@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.inditex.ms.prices</groupId>
+    <artifactId>ms-product-pricing</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.3.5</version>
+        <relativePath/>
+        <!-- lookup parent from repository -->
+    </parent>
+
+    <name>ms-product-pricing</name>
+    <description>Spring backend application with hexagonal architecture for payments portal</description>
+    <packaging>pom</packaging>
+    <modules>
+        <module>domain</module>
+        <module>infrastructure</module>
+        <module>application</module>
+        <module>bootstrap</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.inditex.ms.prices</groupId>
+                <artifactId>domain</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.inditex.ms.prices</groupId>
+                <artifactId>infrastructure</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.inditex.ms.prices</groupId>
+                <artifactId>application</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.inditex.ms.prices</groupId>
+                <artifactId>bootstrap</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+
+</project>

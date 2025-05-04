@@ -1,0 +1,154 @@
+spring:
+  config:
+    import: "optional:configserver:"
+  application:
+    name: ms-product-pricing
+  profiles:
+    active: local
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+logging:
+  level:
+    root: INFO
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui
+# -------------------------------
+# Configuración para el entorno LOCAL
+# -------------------------------
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
+    default-schema: PUBLIC
+    database-change-log-table: CHANGELOG_REQUEST_DATA
+    database-change-log-lock-table: CHANGELOG_REQUEST_DATA_LOCK
+    enabled: true
+  datasource:
+    url: jdbc:h2:mem:localdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  h2:
+    console:
+      enabled: true         # Habilitar la consola H2 para pruebas
+      path: /h2-console
+server:
+  port: 8080
+logging:
+  level:
+    com.inditex: DEBUG    # Ajusta el paquete según tu estructura
+
+# -------------------------------
+# Configuración para el entorno DEV
+# -------------------------------
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: jdbc:h2:mem:devdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update       # Actualiza el esquema sin perder datos
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+server:
+  port: 8081
+swagger:
+  enabled: true
+  title: "API Hexagonal - Dev"
+logging:
+  level:
+    com.tuempresa: DEBUG
+
+# -------------------------------
+# Configuración para el entorno PRE (Pre-producción)
+# -------------------------------
+---
+spring:
+  config:
+    activate:
+      on-profile: pre
+  datasource:
+    url: jdbc:h2:mem:predb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: validate     # Valida el esquema sin modificar la BD
+    show-sql: false
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+server:
+  port: 8082
+swagger:
+  enabled: true
+  title: "API Hexagonal - Pre"
+logging:
+  level:
+    com.tuempresa: INFO
+
+# -------------------------------
+# Configuración para el entorno PRO (Producción)
+# -------------------------------
+---
+spring:
+  config:
+    activate:
+      on-profile: pro
+  datasource:
+    url: jdbc:h2:mem:proddb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: none        # No se realizan cambios automáticos en el esquema
+    show-sql: false
+  h2:
+    console:
+      enabled: false        # Se deshabilita la consola H2 en producción
+server:
+  port: 8083
+swagger:
+  enabled: false            # No se expone Swagger en producción
+  title: "API Hexagonal - Pro"
+logging:
+  level:
+    com.tuempresa: WARN
+management:
+  endpoint:
+    health:
+      show-details: never   # Se ocultan detalles sensibles del health endpoint

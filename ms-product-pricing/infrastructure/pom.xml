@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.inditex.ms.prices</groupId>
+        <artifactId>ms-product-pricing</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>infrastructure</artifactId>
+    <name>infrastructure</name>
+    <description>infrastructure</description>
+
+    <properties>
+        <java.version>17</java.version>
+        <mapstruct.version>1.5.3.Final</mapstruct.version>
+    </properties>
+
+    <dependencies>
+        <!-- Dependencias de módulos propios -->
+        <dependency>
+            <groupId>com.inditex.ms.prices</groupId>
+            <artifactId>domain</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.inditex.ms.prices</groupId>
+            <artifactId>application</artifactId>
+        </dependency>
+
+        <!-- Dependencias de Spring Boot -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Base de datos -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <!-- Procesador de configuración -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+            <version>4.30.0</version>
+        </dependency>
+
+        <!-- Dependencia de Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Dependencias para test -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.projectreactor</groupId>
+            <artifactId>reactor-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.2.0</version>
+        </dependency>
+        <!-- Swagger Dependency -->
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-boot-starter</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>1.5.5.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct-processor</artifactId>
+            <version>1.5.5.Final</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <!-- Configuración OpenApi -->
+            <plugin>
+                <groupId>org.openapitools</groupId>
+                <artifactId>openapi-generator-maven-plugin</artifactId>
+                <version>7.0.1</version>
+                <executions>
+                    <execution>
+                        <id>generate-innvierte-server</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <skipValidateSpec>false</skipValidateSpec>
+
+                            <!-- The OpenAPI spec is in a file in this
+                            repository called "api.yml" -->
+                            <inputSpec>
+                                ${project.build.resources[0].directory}/contract/api.yaml
+                            </inputSpec>
+
+                            <!-- There are many generators available. We are
+                            using spring -->
+                            <generatorName>spring</generatorName>
+
+                            <!-- Models are DTOs, generally from the schemas
+                                portion of the spec. -->
+                            <generateModels>true</generateModels>
+
+                            <!-- These are the packages we want our APIs and
+                                Models generated in, respectively. -->
+                            <apiPackage>ms.inditex.adapters.input.rest.apis</apiPackage>
+                            <modelPackage>ms.inditex.adapters.input.rest.apis.model</modelPackage>
+
+                            <generateSupportingFiles>false</generateSupportingFiles>
+
+                            <!-- Custom templates are stored here. -->
+                            <templateDirectory>
+                                ${project.build.resources[0].directory}/openapi_custom_templates
+                            </templateDirectory>
+
+                            <configOptions>
+
+                                <!-- already have this: switch to jakarta.* packages -->
+                                <useJakartaEe>true</useJakartaEe>
+                                <!-- ADD THIS: generate @NotNull, @Size, @Min/@Max, @Pattern, etc. -->
+                                <useBeanValidation>true</useBeanValidation>
+
+
+                                <!--Enable OpenAPI Jackson Nullable library-->
+                                <openApiNullable>false</openApiNullable>
+
+                                <!-- If this is set to true, then service
+                                    interfaces will be generated. -->
+                                <interfaceOnly>true</interfaceOnly>
+
+                                <!--Whether to skip generation of default implementations for java8 interfaces-->
+                                <skipDefaultInterface>true</skipDefaultInterface>
+
+                                <!-- Whether to generate constructors with
+                                required args for models -->
+                                <generatedConstructorWithRequiredArgs>false</generatedConstructorWithRequiredArgs>
+
+                                <!-- Open the OpenApi specification in
+                                swagger-ui. Will also import and configure
+                                needed dependencies -->
+                                <useSwaggerUI>true</useSwaggerUI>
+
+                                <!-- If disabled, method are annotated using a
+                                @ResponseStatus annotation, which has the status
+                                of the first response declared in the Api
+                                definition-->
+                                <useResponseEntity>false</useResponseEntity>
+
+                                <dateLibrary>java8-localdatetime</dateLibrary>
+
+                                <!-- Use tags for creating interface and
+                                controller classnames-->
+                                <useTags>true</useTags>
+
+                                <!-- Skip header parameters in the generated API
+                                methods using @ApiImplicitParams annotation. -->
+                                <implicitHeaders>true</implicitHeaders>
+
+                                <!-- Additional annotations for model type(class
+                                level annotations). List separated by
+                                semicolon(;) or new line (Linux or Windows)-->
+                                <additionalModelTypeAnnotations>
+                                    @com.fasterxml.jackson.annotation.JsonInclude(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL);
+                                    @lombok.Builder;
+                                    @lombok.AllArgsConstructor(access =
+                                    lombok.AccessLevel.PRIVATE);
+                                    @lombok.NoArgsConstructor(access =
+                                    lombok.AccessLevel.PRIVATE);
+                                    @lombok.ToString;
+                                </additionalModelTypeAnnotations>
+                            </configOptions>
+
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
