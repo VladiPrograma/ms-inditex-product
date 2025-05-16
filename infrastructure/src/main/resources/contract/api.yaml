@@ -1,0 +1,227 @@
+openapi: 3.0.0
+info:
+  title: Price API
+  version: 1.0.0
+  description: >
+    API to retrieve product price information
+servers:
+  - url: http://localhost:8080
+    description: Local server
+paths:
+
+  /prices:
+    get:
+      summary: Retrieve price by application date, product and brand
+      description: Returns the price tariff applicable to a given product and brand at the specified date and time
+      operationId: getPrice
+      parameters:
+        - $ref: '#/components/parameters/applicationDate'
+        - $ref: '#/components/parameters/productId'
+        - $ref: '#/components/parameters/brandId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PriceDto'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+      tags:
+        - price
+
+components:
+  parameters:
+    applicationDate:
+      name: applicationDate
+      in: query
+      description: Date and time for which the price should be applied (ISO 8601 date-time, UTC)
+      required: true
+      example: 2020-06-14T00:00:00
+      schema:
+        type: string
+        format: date-time
+
+    productId:
+      name: productId
+      in: query
+      description: Identifier of the product
+      required: true
+      example: 35455
+      schema:
+        type: integer
+        format: int64
+        minimum: 1
+
+    brandId:
+      name: brandId
+      in: query
+      description: Identifier of the brand (chain)
+      required: true
+      example: 1
+      schema:
+        type: integer
+        minimum: 1
+
+  responses:
+    400BadRequest:
+      description: Bad request due to invalid or missing parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ResponseError'
+          examples:
+            invalidParameters:
+              value:
+                messages:
+                  - alias: invalidParameter
+                    type: ERROR
+                    message: One or more parameters do not meet the requirements
+                    params:
+                      - name: field
+                        message: Empty or malformed field
+
+    401Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ResponseError'
+          examples:
+            unauthorized:
+              value:
+                messages:
+                  - alias: unauthorized
+                    type: CRITICAL
+                    message: Unauthorized to access the resource
+
+    404NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ResponseError'
+          examples:
+            notFound:
+              value:
+                messages:
+                  - alias: notFound
+                    type: ERROR
+                    message: Resource not found
+                    params:
+                      - name: id
+                        message: No resource exists with the given ID
+
+    500InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ResponseError'
+          examples:
+            serverError:
+              value:
+                messages:
+                  - alias: serviceError
+                    type: ERROR
+                    message: Sorry, something went wrong on the server
+
+  schemas:
+    PriceDto:
+      type: object
+      additionalProperties: false
+      properties:
+        productId:
+          type: integer
+          format: int64
+          minimum: 1
+          description: Identifier of the product
+        brandId:
+          type: integer
+          minimum: 1
+          description: Identifier of the brand
+        priceList:
+          type: integer
+          minimum: 1
+          description: Identifier of the price tariff to be applied
+        startDate:
+          type: string
+          format: date-time
+          description: Start date/time when this price is valid (ISO 8601, UTC)
+        endDate:
+          type: string
+          format: date-time
+          description: End date/time when this price is valid (ISO 8601, UTC)
+        price:
+          type: number
+          format: double
+          minimum: 0
+          description: Final sale price
+        currency:
+          type: string
+          pattern: '^[A-Z]{3}$'
+          description: ISO 4217 currency code
+      required:
+        - productId
+        - brandId
+        - priceList
+        - startDate
+        - endDate
+        - price
+        - currency
+
+    ResponseError:
+      type: object
+      additionalProperties: false
+      properties:
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Message'
+          maxItems: 100
+
+    Message:
+      type: object
+      additionalProperties: false
+      properties:
+        alias:
+          type: string
+          description: Alias of the error type
+        type:
+          type: string
+          description: Severity or type of the message (e.g., ERROR, CRITICAL)
+        message:
+          type: string
+          description: Human-readable error message
+        params:
+          type: array
+          items:
+            $ref: '#/components/schemas/Parameter'
+      required:
+        - alias
+        - type
+        - message
+
+    Parameter:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+          description: Name of the attribute
+        message:
+          type: string
+          description: Message associated with the attribute
+      required:
+        - name
+        - message
+
+tags:
+  - name: price
+    description: Operations to retrieve price information
